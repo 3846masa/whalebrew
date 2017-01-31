@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"os/user"
 	"strings"
-	"syscall"
 
 	"github.com/bfirsh/whalebrew/packages"
 	"github.com/spf13/cobra"
@@ -73,6 +72,11 @@ var runCommand = &cobra.Command{
 		dockerArgs = append(dockerArgs, pkg.Image)
 		dockerArgs = append(dockerArgs, args[1:]...)
 
-		return syscall.Exec(dockerPath, dockerArgs, os.Environ())
+		dockerCmd := exec.Command(dockerPath, dockerArgs[1:]...)
+		dockerCmd.Env = os.Environ()
+		dockerCmd.Stdin = os.Stdin
+		dockerCmd.Stdout = os.Stdout
+		dockerCmd.Stderr = os.Stderr
+		return dockerCmd.Run()
 	},
 }
