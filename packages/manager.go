@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"runtime"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -36,6 +37,15 @@ func (pm *PackageManager) Install(pkg *Package) error {
 	}
 
 	d = append([]byte("#!/usr/bin/env whalebrew\n"), d...)
+
+	if runtime.GOOS == "windows" {
+		batch := []byte("@whalebrew %~dp0\\" + pkg.Name + " %*")
+		batchPath := packagePath + ".bat"
+		if err := ioutil.WriteFile(batchPath, batch, 0755); err != nil {
+			return err
+		}
+	}
+
 	return ioutil.WriteFile(packagePath, d, 0755)
 }
 
@@ -88,6 +98,14 @@ func (pm *PackageManager) Uninstall(packageName string) error {
 	}
 	if !isPackage {
 		return fmt.Errorf("%s is not a Whalebrew package", p)
+	}
+	if runtime.GOOS == "windows" {
+		batchPath := p + ".bat"
+		if _, err := os.Stat(batchPath); err == nil {
+			if err := os.Remove(batchPath); err != nil {
+				return err
+			}
+		}
 	}
 	return os.Remove(p)
 }
