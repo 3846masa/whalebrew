@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"runtime"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -35,7 +36,12 @@ func (pm *PackageManager) Install(pkg *Package) error {
 		return fmt.Errorf("'%s' already exists", packagePath)
 	}
 
-	d = append([]byte("#!/usr/bin/env whalebrew\n"), d...)
+	if runtime.GOOS == "windows" {
+		d = append([]byte(":: |\n  @( whalebrew run %~f0 %* || exit /b %ERRORLEVEL% ) && exit /b 0\n"), d...)
+		packagePath = packagePath + ".bat"
+	} else {
+		d = append([]byte("#!/usr/bin/env whalebrew\n"), d...)
+	}
 	return ioutil.WriteFile(packagePath, d, 0755)
 }
 
@@ -82,6 +88,9 @@ func (pm *PackageManager) Load(name string) (*Package, error) {
 // Uninstall uninstalls a package
 func (pm *PackageManager) Uninstall(packageName string) error {
 	p := path.Join(pm.InstallPath, packageName)
+	if runtime.GOOS == "windows" {
+		p = p + ".bat"
+	}
 	isPackage, err := IsPackage(p)
 	if err != nil {
 		return err
@@ -94,6 +103,10 @@ func (pm *PackageManager) Uninstall(packageName string) error {
 
 // IsPackage returns true if the given path is a whalebrew package
 func IsPackage(path string) (bool, error) {
+	if runtime.GOOS == "windows" && !strings.HasSuffix(path, ".bat") {
+		return false, nil
+	}
+
 	f, err := os.Open(path)
 	if err != nil {
 		return false, err
@@ -111,6 +124,22 @@ func IsPackage(path string) (bool, error) {
 	}
 
 	reader := bufio.NewReader(f)
+
+	if runtime.GOOS == "windows" {
+		line, _, err := reader.ReadLine()
+
+		if err == io.EOF {
+			return false, nil
+		}
+		if err != nil {
+			return false, err
+		}
+		if strings.HasPrefix(string(line), ":: |") {
+			return true, nil
+		}
+		return false, nil
+	}
+
 	firstTwoBytes := make([]byte, 2)
 	_, err = reader.Read(firstTwoBytes)
 
