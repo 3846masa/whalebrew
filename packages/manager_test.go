@@ -3,7 +3,7 @@ package packages
 import (
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -20,7 +20,7 @@ func TestPackageManagerInstall(t *testing.T) {
 	assert.Nil(t, err)
 	err = pm.Install(pkg)
 	assert.Nil(t, err)
-	packagePath := path.Join(installPath, "whalesay")
+	packagePath := filepath.Join(installPath, "whalesay")
 	contents, err := ioutil.ReadFile(packagePath)
 	assert.Nil(t, err)
 	assert.Equal(t, strings.TrimSpace(string(contents)), "#!/usr/bin/env whalebrew\nimage: whalebrew/whalesay")
@@ -34,13 +34,13 @@ func TestPackageManagerInstall(t *testing.T) {
 	pkg.Name = "whalesay2"
 	err = pm.Install(pkg)
 	assert.Nil(t, err)
-	packagePath = path.Join(installPath, "whalesay2")
+	packagePath = filepath.Join(installPath, "whalesay2")
 	contents, err = ioutil.ReadFile(packagePath)
 	assert.Nil(t, err)
 	assert.Equal(t, strings.TrimSpace(string(contents)), "#!/usr/bin/env whalebrew\nimage: whalebrew/whalesay")
 
 	// file already exists
-	err = ioutil.WriteFile(path.Join(installPath, "alreadyexists"), []byte("not a whalebrew package"), 0755)
+	err = ioutil.WriteFile(filepath.Join(installPath, "alreadyexists"), []byte("not a whalebrew package"), 0755)
 	assert.Nil(t, err)
 	pkg, err = NewPackageFromImage("whalebrew/whalesay", types.ImageInspect{})
 	assert.Nil(t, err)
@@ -58,15 +58,15 @@ func TestPackageManagerList(t *testing.T) {
 	assert.Nil(t, err)
 
 	// file which isn't a package
-	err = ioutil.WriteFile(path.Join(installPath, "notapackage"), []byte("not a whalebrew package"), 0755)
+	err = ioutil.WriteFile(filepath.Join(installPath, "notapackage"), []byte("not a whalebrew package"), 0755)
 	assert.Nil(t, err)
 
 	// no permissions to read file
-	err = ioutil.WriteFile(path.Join(installPath, "nopermissions"), []byte("blah blah blah"), 0000)
+	err = ioutil.WriteFile(filepath.Join(installPath, "nopermissions"), []byte("blah blah blah"), 0000)
 	assert.Nil(t, err)
 
 	// dead symlink
-	err = os.Symlink("/doesnotexist", path.Join(installPath, "deadsymlink"))
+	err = os.Symlink("/doesnotexist", filepath.Join(installPath, "deadsymlink"))
 	assert.Nil(t, err)
 
 	pm := NewPackageManager(installPath)
@@ -89,12 +89,12 @@ func TestPackageManagerUninstall(t *testing.T) {
 	assert.Nil(t, err)
 	err = pm.Install(pkg)
 	assert.Nil(t, err)
-	_, err = os.Stat(path.Join(installPath, "whalesay"))
+	_, err = os.Stat(filepath.Join(installPath, "whalesay"))
 	assert.Nil(t, err)
 	err = pm.Uninstall("whalesay")
 	assert.Nil(t, err)
 
-	err = ioutil.WriteFile(path.Join(installPath, "notapackage"), []byte("not a whalebrew package"), 0755)
+	err = ioutil.WriteFile(filepath.Join(installPath, "notapackage"), []byte("not a whalebrew package"), 0755)
 	assert.Nil(t, err)
 	err = pm.Uninstall("notapackage")
 	assert.Contains(t, err.Error(), "/notapackage is not a Whalebrew package")
@@ -104,21 +104,21 @@ func TestIsPackage(t *testing.T) {
 	dir, err := ioutil.TempDir("", "whalebrewtest")
 	assert.Nil(t, err)
 
-	err = ioutil.WriteFile(path.Join(dir, "onebyte"), []byte("!"), 0755)
+	err = ioutil.WriteFile(filepath.Join(dir, "onebyte"), []byte("!"), 0755)
 	assert.Nil(t, err)
-	isPackage, err := IsPackage(path.Join(dir, "onebyte"))
-	assert.Nil(t, err)
-	assert.False(t, isPackage)
-
-	err = ioutil.WriteFile(path.Join(dir, "notpackage"), []byte("not a package"), 0755)
-	assert.Nil(t, err)
-	isPackage, err = IsPackage(path.Join(dir, "notpackage"))
+	isPackage, err := IsPackage(filepath.Join(dir, "onebyte"))
 	assert.Nil(t, err)
 	assert.False(t, isPackage)
 
-	err = ioutil.WriteFile(path.Join(dir, "workingpackage"), []byte("#!/usr/bin/env whalebrew\nimage: something"), 0755)
+	err = ioutil.WriteFile(filepath.Join(dir, "notpackage"), []byte("not a package"), 0755)
 	assert.Nil(t, err)
-	isPackage, err = IsPackage(path.Join(dir, "workingpackage"))
+	isPackage, err = IsPackage(filepath.Join(dir, "notpackage"))
+	assert.Nil(t, err)
+	assert.False(t, isPackage)
+
+	err = ioutil.WriteFile(filepath.Join(dir, "workingpackage"), []byte("#!/usr/bin/env whalebrew\nimage: something"), 0755)
+	assert.Nil(t, err)
+	isPackage, err = IsPackage(filepath.Join(dir, "workingpackage"))
 	assert.Nil(t, err)
 	assert.True(t, isPackage)
 }

@@ -7,7 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -31,7 +31,7 @@ func (pm *PackageManager) Install(pkg *Package) error {
 		return err
 	}
 
-	packagePath := path.Join(pm.InstallPath, pkg.Name)
+	packagePath := filepath.Join(pm.InstallPath, pkg.Name)
 
 	if _, err := os.Stat(packagePath); err == nil {
 		return fmt.Errorf("'%s' already exists", packagePath)
@@ -55,7 +55,7 @@ func (pm *PackageManager) List() (map[string]*Package, error) {
 		return packages, err
 	}
 	for _, file := range files {
-		isPackage, err := IsPackage(path.Join(pm.InstallPath, file.Name()))
+		isPackage, err := IsPackage(filepath.Join(pm.InstallPath, file.Name()))
 		if err != nil {
 			// Check for various file errors here rather than in IsPackage so it
 			// does not swallow errors when checking individual files.
@@ -84,12 +84,12 @@ func (pm *PackageManager) List() (map[string]*Package, error) {
 
 // Load returns an installed package given its package name
 func (pm *PackageManager) Load(name string) (*Package, error) {
-	return LoadPackageFromPath(path.Join(pm.InstallPath, name))
+	return LoadPackageFromPath(filepath.Join(pm.InstallPath, name))
 }
 
 // Uninstall uninstalls a package
 func (pm *PackageManager) Uninstall(packageName string) error {
-	p := path.Join(pm.InstallPath, packageName)
+	p := filepath.Join(pm.InstallPath, packageName)
 	if runtime.GOOS == "windows" {
 		p = p + ".bat"
 	}
