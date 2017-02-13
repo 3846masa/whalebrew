@@ -72,14 +72,7 @@ var runCommand = &cobra.Command{
 			dockerArgs = append(dockerArgs, "-p")
 			dockerArgs = append(dockerArgs, portmap)
 		}
-		
-		user, err := user.Current()
-		if err != nil {
-			return err
-		}
-		dockerArgs = append(dockerArgs, "-u")
-		dockerArgs = append(dockerArgs, user.Uid + ":" + user.Gid)
-		
+
 		dockerArgs = append(dockerArgs, pkg.Image)
 		dockerArgs = append(dockerArgs, args[1:]...)
 
@@ -103,6 +96,13 @@ var runCommand = &cobra.Command{
 			}
 			os.Exit(exitStatus)
 		}
+
+		user, err := user.Current()
+		if err != nil {
+			return err
+		}
+		dockerArgs = append(dockerArgs, "-u")
+		dockerArgs = append(dockerArgs, user.Uid+":"+user.Gid)
 
 		return syscall.Exec(dockerPath, dockerArgs, os.Environ())
 	},
