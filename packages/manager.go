@@ -2,6 +2,7 @@ package packages
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -38,6 +39,7 @@ func (pm *PackageManager) Install(pkg *Package) error {
 
 	if runtime.GOOS == "windows" {
 		d = append([]byte(":: |\n  @( whalebrew run %~f0 %* || exit /b %ERRORLEVEL% ) && exit /b 0\n"), d...)
+		d = bytes.Replace(d, []byte("\n"), []byte("\r\n"), -1)
 		packagePath = packagePath + ".bat"
 	} else {
 		d = append([]byte("#!/usr/bin/env whalebrew\n"), d...)
