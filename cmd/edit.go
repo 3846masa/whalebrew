@@ -3,7 +3,8 @@ package cmd
 import (
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
+	"runtime"
 	"syscall"
 
 	"github.com/bfirsh/whalebrew/packages"
@@ -26,6 +27,9 @@ var editCommand = &cobra.Command{
 		}
 
 		pkgName := args[0]
+		if runtime.GOOS == "windows" {
+			pkgName = pkgName + ".bat"
+		}
 		pm := packages.NewPackageManager(viper.GetString("install_path"))
 		_, err := pm.Load(pkgName)
 		if err != nil {
@@ -36,7 +40,11 @@ var editCommand = &cobra.Command{
 		if !ok {
 			editor, ok = os.LookupEnv("GIT_EDITOR")
 			if !ok {
-				editor = "vi"
+				if runtime.GOOS == "windows" {
+					editor = "notepad"
+				} else {
+					editor = "vi"
+				}
 			}
 		}
 
@@ -47,7 +55,28 @@ var editCommand = &cobra.Command{
 
 		editorArgs := []string{
 			editorPath,
-			path.Join(pm.InstallPath, pkgName),
+			filepath.Join(pm.InstallPath, pkgName),
+		}
+
+		if runtime.GOOS == "windows" {
+			editorCmd := exec.Command(editorPath, editorArgs[1:]...)
+			editorCmd.Env = os.Environ()
+			editorCmd.Stdin = os.Stdin
+			editorCmd.Stdout = os.Stdout
+			editorCmd.Stderr = os.Stderr
+
+			exitStatus := 1
+			if err := editorCmd.Run(); err != nil {
+				if exitError, ok := err.(*exec.ExitError); ok {
+					if ws, ok := exitError.Sys().(syscall.WaitStatus); ok {
+						exitStatus = ws.ExitStatus()
+					}
+				}
+			} else {
+				ws := editorCmd.ProcessState.Sys().(syscall.WaitStatus)
+				exitStatus = ws.ExitStatus()
+			}
+			os.Exit(exitStatus)
 		}
 
 		return syscall.Exec(editorPath, editorArgs, os.Environ())
