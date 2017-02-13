@@ -2,6 +2,13 @@ language: go
 go:
 - 1.7
 
+# For forked project
+before_install:
+- mkdir -p $HOME/gopath/src/github.com/bfirsh/whalebrew
+- rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/bfirsh/whalebrew/
+- export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/bfirsh/whalebrew
+- cd $HOME/gopath/src/github.com/bfirsh/whalebrew
+
 install:
 - go get -t ./...
 - go get github.com/golang/lint/golint
