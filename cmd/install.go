@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 
 	"github.com/bfirsh/whalebrew/client"
 	"github.com/bfirsh/whalebrew/packages"
@@ -71,7 +70,7 @@ var installCommand = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		fmt.Printf("🐳  Installed %s to %s\n", imageName, filepath.Join(pm.InstallPath, pkg.Name))
+		fmt.Printf("🐳  Installed %s to %s\n", imageName, pm.MakePackagePath(pkg.Name))
 		return nil
 	},
 }

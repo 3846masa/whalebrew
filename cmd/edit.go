@@ -3,7 +3,6 @@ package cmd
 import (
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"syscall"
 
@@ -27,9 +26,6 @@ var editCommand = &cobra.Command{
 		}
 
 		pkgName := args[0]
-		if runtime.GOOS == "windows" {
-			pkgName = pkgName + ".bat"
-		}
 		pm := packages.NewPackageManager(viper.GetString("install_path"))
 		_, err := pm.Load(pkgName)
 		if err != nil {
@@ -55,7 +51,7 @@ var editCommand = &cobra.Command{
 
 		editorArgs := []string{
 			editorPath,
-			filepath.Join(pm.InstallPath, pkgName),
+			pm.MakePackagePath(pkgName),
 		}
 
 		if runtime.GOOS == "windows" {
