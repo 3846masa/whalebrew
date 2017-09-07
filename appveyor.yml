@@ -14,11 +14,17 @@ install:
   - go env
   - go get -t ./...
   - go get -u github.com/golang/lint/golint
+  - go get -u github.com/mitchellh/gox
 
 build_script:
   - golint ./...
   - go test ./...
+  - script/build
 
 test: off
 
-deploy: off
+deploy:
+  provider: GitHub
+  GitHub: "build/whalebrew-Windows-x86_64.exe"
+  on:
+    appveyor_repo_tag: true
