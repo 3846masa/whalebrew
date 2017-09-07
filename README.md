@@ -42,7 +42,7 @@ First, [install Docker](https://docs.docker.com/engine/installation/). The easie
 
 Next, on macOS and Linux:
 
-    curl -L "https://github.com/bfirsh/whalebrew/releases/download/0.0.4/whalebrew-$(uname -s)-$(uname -m)" -o /usr/local/bin/whalebrew; chmod +x /usr/local/bin/whalebrew
+    curl -L "https://github.com/bfirsh/whalebrew/releases/download/0.0.5/whalebrew-$(uname -s)-$(uname -m)" -o /usr/local/bin/whalebrew; chmod +x /usr/local/bin/whalebrew
 
 Windows support is theoretically possible, but not implemented yet.
 
@@ -140,6 +140,21 @@ There are some labels you can use to configure how Whalebrew installs your image
 * `io.whalebrew.config.networks`: A list of networks to connect on the container.
 
         LABEL io.whalebrew.config.networks '["host"]'
+
+* `io.whalebrew.config.working_dir`: The path the working directory should be bound to in the container. For example putting this in your image's `Dockerfile` will ensure the working directory is available in /working_directory in the container
+
+        LABEL io.whalebrew.config.working_dir '/working_directory'
+
+#### Using user environment variables
+
+The labels `io.whalebrew.config.working_dir`, `io.whalebrew.config.volumes` and `io.whalebrew.config.environment` are expanded with user environment variables when the container is launched.
+
+For example, if your image has this line in your `Dockerfile`:
+
+        LABEL io.whalebrew.config.working_dir '$PWD'
+
+At runtime, it will bind your working directory into the container at the same path and set it as the working directory.
+
 
 ### Whalebrew images
 
