@@ -88,13 +88,16 @@ func TestPackageManagerForceInstall(t *testing.T) {
 	assert.Nil(t, err)
 	err = pm.ForceInstall(pkg)
 	assert.Nil(t, err)
-	packagePath := path.Join(installPath, "whalesay")
+	packagePath := MakePackagePath(installPath, "whalesay")
 	contents, err := ioutil.ReadFile(packagePath)
 	assert.Nil(t, err)
-	assert.Equal(t, strings.TrimSpace(string(contents)), "#!/usr/bin/env whalebrew\nimage: whalebrew/whalesay")
+	assert.Equal(t, strings.TrimSpace(string(contents)), shebang+"image: whalebrew/whalesay")
 	fi, err := os.Stat(packagePath)
 	assert.Nil(t, err)
-	assert.Equal(t, int(fi.Mode()), 0755)
+	// if not on Windows, check permission
+	if runtime.GOOS != "windows" {
+		assert.Equal(t, int(fi.Mode()), 0755)
+	}
 
 	// custom install path
 	pkg, err = NewPackageFromImage("whalebrew/whalesay", types.ImageInspect{})
@@ -102,23 +105,23 @@ func TestPackageManagerForceInstall(t *testing.T) {
 	pkg.Name = "whalesay2"
 	err = pm.ForceInstall(pkg)
 	assert.Nil(t, err)
-	packagePath = path.Join(installPath, "whalesay2")
+	packagePath = MakePackagePath(installPath, "whalesay2")
 	contents, err = ioutil.ReadFile(packagePath)
 	assert.Nil(t, err)
-	assert.Equal(t, strings.TrimSpace(string(contents)), "#!/usr/bin/env whalebrew\nimage: whalebrew/whalesay")
+	assert.Equal(t, strings.TrimSpace(string(contents)), shebang+"image: whalebrew/whalesay")
 
 	// file already exists
-	err = ioutil.WriteFile(path.Join(installPath, "alreadyexists"), []byte("not a whalebrew package"), 0755)
+	err = ioutil.WriteFile(MakePackagePath(installPath, "alreadyexists"), []byte("not a whalebrew package"), 0755)
 	assert.Nil(t, err)
 	pkg, err = NewPackageFromImage("whalebrew/whalesay", types.ImageInspect{})
 	assert.Nil(t, err)
 	pkg.Name = "alreadyexists"
 	err = pm.ForceInstall(pkg)
 	assert.Nil(t, err)
-	packagePath = path.Join(installPath, "alreadyexists")
+	packagePath = MakePackagePath(installPath, "alreadyexists")
 	contents, err = ioutil.ReadFile(packagePath)
 	assert.Nil(t, err)
-	assert.Equal(t, strings.TrimSpace(string(contents)), "#!/usr/bin/env whalebrew\nimage: whalebrew/whalesay")
+	assert.Equal(t, strings.TrimSpace(string(contents)), shebang+"image: whalebrew/whalesay")
 }
 
 func TestPackageManagerList(t *testing.T) {

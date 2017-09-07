@@ -55,9 +55,15 @@ func (pm *PackageManager) ForceInstall(pkg *Package) error {
 		return err
 	}
 
-	packagePath := path.Join(pm.InstallPath, pkg.Name)
+	packagePath := pm.MakePackagePath(pkg.Name)
 
-	d = append([]byte("#!/usr/bin/env whalebrew\n"), d...)
+	if runtime.GOOS == "windows" {
+		d = append([]byte(":: |\r\n  @( whalebrew run %~f0 %* ) & exit /b errorlevel\r\n"), d...)
+		d = bytes.Replace(d, []byte("\r\n"), []byte("\n"), -1)
+		d = bytes.Replace(d, []byte("\n"), []byte("\r\n"), -1)
+	} else {
+		d = append([]byte("#!/usr/bin/env whalebrew\n"), d...)
+	}
 	return ioutil.WriteFile(packagePath, d, 0755)
 }
 
