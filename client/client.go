@@ -1,6 +1,7 @@
 package client
 
 import (
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 )
 
@@ -13,6 +14,8 @@ func NewClient() (*client.Client, error) {
 	if err != nil {
 		return cli, err
 	}
-	cli.UpdateClientVersion(DefaultVersion)
+	cli.NegotiateAPIVersionPing(types.Ping{
+		APIVersion: DefaultVersion,
+	})
 	return cli, nil
 }
