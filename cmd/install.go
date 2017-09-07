@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/Songmu/prompter"
 	"github.com/bfirsh/whalebrew/client"
 	"github.com/bfirsh/whalebrew/packages"
 	dockerClient "github.com/docker/docker/client"
@@ -14,9 +15,11 @@ import (
 )
 
 var customPackageName string
+var forceInstall bool
 
 func init() {
 	installCommand.Flags().StringVarP(&customPackageName, "name", "n", "", "Name to give installed package. Defaults to image name.")
+	installCommand.Flags().BoolVarP(&forceInstall, "force", "f", false, "Replace existing package if already exists. Defaults to false.")
 
 	RootCmd.AddCommand(installCommand)
 }
@@ -65,8 +68,20 @@ var installCommand = &cobra.Command{
 		if customPackageName != "" {
 			pkg.Name = customPackageName
 		}
+
+		preinstallMessage := pkg.PreinstallMessage()
+		if preinstallMessage != "" {
+			fmt.Println(preinstallMessage)
+			if !prompter.YN("Is this okay?", true) {
+				return fmt.Errorf("not installing package")
+			}
+		}
 		pm := packages.NewPackageManager(viper.GetString("install_path"))
-		err = pm.Install(pkg)
+		if forceInstall {
+			err = pm.ForceInstall(pkg)
+		} else {
+			err = pm.Install(pkg)
+		}
 		if err != nil {
 			return err
 		}

@@ -76,6 +76,11 @@ var runCommand = &cobra.Command{
 		dockerArgs = append(dockerArgs, pkg.Image)
 		dockerArgs = append(dockerArgs, args[1:]...)
 
+		for _, network := range pkg.Networks {
+			dockerArgs = append(dockerArgs, "--net")
+			dockerArgs = append(dockerArgs, network)
+		}
+
 		if runtime.GOOS == "windows" {
 			dockerCmd := exec.Command(dockerPath, dockerArgs[1:]...)
 			dockerCmd.Env = os.Environ()
