@@ -19,12 +19,14 @@ install:
 build_script:
   - golint ./...
   - go test ./...
-  - script/build
+  - ps: script/build-for-windows.ps1
 
 test: off
 
 deploy:
   provider: GitHub
-  GitHub: "build/whalebrew-Windows-x86_64.exe"
+  auth_token:
+    secure: ""
+  artifact: "build/whalebrew-Windows-x86_64.exe"
   on:
     appveyor_repo_tag: true
