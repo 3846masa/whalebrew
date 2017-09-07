@@ -79,6 +79,9 @@ var runCommand = &cobra.Command{
 		}
 
 		if runtime.GOOS == "windows" {
+			dockerArgs = append(dockerArgs, pkg.Image)
+			dockerArgs = append(dockerArgs, args[1:]...)
+
 			dockerCmd := exec.Command(dockerPath, dockerArgs[1:]...)
 			dockerCmd.Env = os.Environ()
 			dockerCmd.Stdin = os.Stdin
