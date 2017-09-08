@@ -46,11 +46,11 @@ Next, on macOS and Linux:
 
 on Windows with Command Prompt:
 
-    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/bfirsh/whalebrew/0.0.5/install.ps1'))" && SET "WHALEBREW_INSTALL_PATH=C:\whalebrew" && SET "PATH=%PATH%;%WHALEBREW_INSTALL_PATH%"
+    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy -Scope CurrentUser Bypass; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/bfirsh/whalebrew/0.0.5/install.ps1'))" && SET "WHALEBREW_INSTALL_PATH=C:\whalebrew" && SET "PATH=%PATH%;%WHALEBREW_INSTALL_PATH%"
 
 on Windows with Powershell:
 
-    Set-ExecutionPolicy AllSigned; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/bfirsh/whalebrew/0.0.5/install.ps1'))
+    Set-ExecutionPolicy -Scope CurrentUser AllSigned; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/bfirsh/whalebrew/0.0.5/install.ps1'))
 
 ## Usage
 
