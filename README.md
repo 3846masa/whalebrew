@@ -1,3 +1,7 @@
+## NOTICE
+
+**This is forked from [bfirsh/whalebrew](https://github.com/bfirsh/whalebrew) for Windows. The diff is [here](https://github.com/bfirsh/whalebrew/compare/0.0.5...3846masa:0.0.5).**
+
 # Whalebrew
 
 Whalebrew creates aliases for Docker images so you can run them as if they were native commands. It's like Homebrew, but with Docker images.
@@ -42,15 +46,15 @@ First, [install Docker](https://docs.docker.com/engine/installation/). The easie
 
 Next, on macOS and Linux:
 
-    curl -L "https://github.com/bfirsh/whalebrew/releases/download/0.0.5/whalebrew-$(uname -s)-$(uname -m)" -o /usr/local/bin/whalebrew; chmod +x /usr/local/bin/whalebrew
+    curl -L "https://github.com/3846masa/whalebrew/releases/download/0.0.5/whalebrew-$(uname -s)-$(uname -m)" -o /usr/local/bin/whalebrew; chmod +x /usr/local/bin/whalebrew
 
 on Windows with Command Prompt:
 
-    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy -Scope CurrentUser Bypass; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/bfirsh/whalebrew/0.0.5/install.ps1'))" && SET "WHALEBREW_INSTALL_PATH=C:\whalebrew" && SET "PATH=%PATH%;%WHALEBREW_INSTALL_PATH%"
+    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy -Scope CurrentUser Bypass; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/3846masa/whalebrew/0.0.5/install.ps1'))" && SET "WHALEBREW_INSTALL_PATH=C:\whalebrew" && SET "PATH=%PATH%;%WHALEBREW_INSTALL_PATH%"
 
 on Windows with Powershell:
 
-    Set-ExecutionPolicy -Scope CurrentUser AllSigned; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/bfirsh/whalebrew/0.0.5/install.ps1'))
+    Set-ExecutionPolicy -Scope CurrentUser AllSigned; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/3846masa/whalebrew/0.0.5/install.ps1'))
 
 ## Usage
 

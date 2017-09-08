@@ -29,7 +29,7 @@ test: off
 deploy:
   provider: GitHub
   auth_token:
-    secure: ""
+    secure: Cxw6097WSqe7peoZ09vrLUk/V/hdIAAUWdJr6eI7kz3WjELls0cHeLMd6iWhxzPn
   artifact: build\whalebrew-Windows-x86_64.exe
   on:
     appveyor_repo_tag: true
