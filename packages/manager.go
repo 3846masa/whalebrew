@@ -39,7 +39,7 @@ func (pm *PackageManager) Install(pkg *Package) error {
 	}
 
 	if runtime.GOOS == "windows" {
-		d = append([]byte(":: |\r\n  @( whalebrew run %~f0 %* ) & exit /b errorlevel\r\n"), d...)
+		d = append([]byte(":: |\r\n  @echo off\r\n  whalebrew run %~f0 %*\r\n  exit /b %errorlevel%\r\n"), d...)
 		d = bytes.Replace(d, []byte("\r\n"), []byte("\n"), -1)
 		d = bytes.Replace(d, []byte("\n"), []byte("\r\n"), -1)
 	} else {
@@ -58,7 +58,7 @@ func (pm *PackageManager) ForceInstall(pkg *Package) error {
 	packagePath := pm.MakePackagePath(pkg.Name)
 
 	if runtime.GOOS == "windows" {
-		d = append([]byte(":: |\r\n  @( whalebrew run %~f0 %* ) & exit /b errorlevel\r\n"), d...)
+		d = append([]byte(":: |\r\n  @echo off\r\n  whalebrew run %~f0 %*\r\n  exit /b %errorlevel%\r\n"), d...)
 		d = bytes.Replace(d, []byte("\r\n"), []byte("\n"), -1)
 		d = bytes.Replace(d, []byte("\n"), []byte("\r\n"), -1)
 	} else {
