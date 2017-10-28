@@ -28,5 +28,5 @@ deploy:
   - "build/whalebrew-Darwin-x86_64"
   - "build/whalebrew-Linux-x86_64"
   on:
-    repo: bfirsh/whalebrew
+    repo: 3846masa/whalebrew
     tags: true
