@@ -17,7 +17,7 @@ var shebang = "#!/usr/bin/env whalebrew\n"
 func init() {
 	// for Windows
 	if runtime.GOOS == "windows" {
-		shebang = ":: |\r\n  @( whalebrew run %~f0 %* ) & exit /b errorlevel\r\n"
+		shebang = ":: |\r\n  @echo off\r\n  whalebrew run %~f0 %*\r\n  exit /b %errorlevel%\r\n"
 	}
 }
 
